@@ -1,0 +1,41 @@
+﻿@model FEP.WebApiModel.RnP.ReturnListSurveyModel
+
+@{
+	ViewBag.Title = "Survey";
+	Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+@section Nav{
+	<div class="title_header">
+		<div class="title-header-container">
+			<div class="container">
+				<!-- if have button -->
+				<div class="header-col-right float-right mt-5"><a href="@Url.Action("Index", "Home", new { area = "RnP"})" class="btn btn-outline-primary text-white"><span class="align-middle"><i class="la la-long-arrow-left">&nbsp;</i></span> @Language.General.ButtonBack</a></div>
+				<div class="header-col-left">
+					<div id="breadcrumb">
+						<nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { area = ""})">@Language.Survey.BreadcrumbHome</a></li>
+                                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { area = "RnP"})">@Language.Survey.BreadcrumbRnP</a></li>
+                                <li class="breadcrumb-item"><a href="#">@Language.Survey.BreadcrumbSurveys</a></li>
+                                <li class="breadcrumb-item active" aria-current="page"><a href="#"></a></li>
+                            </ol>
+						</nav>
+					</div>
+                    <h1 class="page-title text-white">@Language.Survey.IndexTitle</h1>
+                    <div class="header-text">@Language.Survey.IndexDescription</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+@Html.Partial("_SurveyList")
+
+@section ContentScript{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            initTable();
+        });
+    </script>
+}

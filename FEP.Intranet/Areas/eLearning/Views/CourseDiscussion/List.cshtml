@@ -1,0 +1,565 @@
+﻿@using FEP.Model
+@using FEP.Model.eLearning
+@model List<CourseDiscussionModel>
+@{ var i = 0;
+    bool addEnable = CurrentUser.HasAccess(UserAccess.CourseDiscussionCreate);
+}
+
+@{
+    ViewBag.Title = "Parameter Course Category";
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+
+@section Nav {
+
+    <div class="title_header">
+        <div class="title-header-container">
+            <div class="container">
+
+                <div class="header-col-right float-right mt-5"><a href="@Url.Action("Index", "Parameter", new { area = "Setting" })" class="btn btn-outline-primary text-white"><span class="align-middle"><i class="la la-long-arrow-left">&nbsp;</i></span> @Language.General.ButtonBack</a></div>
+                <div class="header-col-left">
+                    <div id="breadcrumb">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home", new { area = "" })">@Language.eLearning.CourseDiscussion.Home</a></li>
+                                <li class="breadcrumb-item"><a href="@Url.Action("List", "CourseDiscussion", new { area = "eLearning" })">@Language.eLearning.CourseDiscussion.TitleList</a></li>
+                                @*<li class="breadcrumb-item active" aria-current="page"><a href="#"></a></li>*@
+                            </ol>
+                        </nav>
+                    </div>
+                    <h1 class="page-title text-white">@Language.eLearning.CourseDiscussion.TitleList</h1>
+                    <div class="header-text">@Language.eLearning.CourseDiscussion.TitleDescriptionList</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+<div class="row">
+    <div class="col-md-12">
+
+        @*<div class="d-flex align-items-center mb-4">
+                <h1 class="h2 flex mr-3 mb-0">Forum</h1>
+                <a href="student-forum-ask.html" class="btn btn-success">Ask a Question</a>
+            </div>*@
+
+        <!-- Search -->
+        @*<div class="flex search-form form-control-rounded search-form--light mb-2" style="min-width: 200px;">
+                <input type="text" class="form-control" placeholder="Search discussions" id="searchSample02">
+                <button class="btn pr-3" type="button" role="button"><i class="material-icons">search</i></button>
+            </div>*@
+        @if (addEnable)
+        {
+            <div class="col-mb-12">
+                <div class="media align-items-center">
+                    <div class="media-body">
+                    </div>
+                    <div class="media-right">
+                        <a href="#" class="btn btn-secondary" onclick="showAdd();">
+                            <i class="la la-plus font-icon" style="font-size: 1.5rem;"></i>
+                            @Language.eLearning.CourseDiscussion.CreateNewLabel
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="" style="padding: 10px" id="addForm">
+
+            </div>
+        }
+
+        <div class="mb-4 d-flex align-items-center">
+            <div class="input-keyword col-lg-10 col-sm-10 mr-auto px-0">
+                <input id="quickSearch" type="text" class="form-control form-control-rounded" placeholder="Search" name="keyword">
+                <div class="input-group-append">
+                    <button class="btn btn-circle" type="button"><i class="fas fa-search text-white"></i></button>
+                </div>
+            </div>
+            @*<small class="text-black-70 text-uppercase mr-3">Displaying 10 out of 5,234 discussions</small>*@
+            <div class="dropdown ml-auto">
+                <a href="" data-toggle="dropdown" class="dropdown-toggle text-black-70" id="DropDownSelected">@Language.eLearning.CourseDiscussion.AllTopicsLabel</a>
+                <div class="dropdown-menu dropdown-menu-right" id="DiscussionDropDown">
+                    <button id="ShowAll" class="dropdown-item active">@Language.eLearning.CourseDiscussion.AllTopicsLabel</button>
+                    <button id="ShowGeneral" class="dropdown-item">@Language.eLearning.CourseDiscussion.GeneralLabel</button>
+                    <button id="ShowGroup" class="dropdown-item">@Language.eLearning.CourseDiscussion.GroupLabel</button>
+                </div>
+            </div>
+        </div>
+
+        <table class="table tableStyle1 tabledata" id="GeneralDataTable">
+            <thead>
+                <tr>
+                    <th colspan="6">
+                        <div class="card-header">
+                            <div class="media align-items-center">
+                                <div class="media-body">
+                                    <h4 class="card-title">@Language.eLearning.CourseDiscussion.GeneralLabel</h4>
+                                    <p class="card-subtitle">@Language.eLearning.CourseDiscussion.GeneralDesc</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </th>
+                </tr>
+                <tr>
+                    <th width="15px">#</th>
+                    <th>@Language.eLearning.CourseDiscussion.TitleList</th>
+                    <th width="260px">@Language.eLearning.CourseDiscussion.DateTimeUpdate</th>
+                </tr>
+            </thead>
+        </table>
+
+        <hr />
+
+        <table class="table tableStyle1 tabledata" id="GroupDataTable">
+            <thead>
+                <tr>
+                    <th colspan="6">
+                        <div class="card-header">
+                            <div class="media align-items-center">
+                                <div class="media-body">
+                                    <h4 class="card-title">@Language.eLearning.CourseDiscussion.GroupLabel</h4>
+                                    <p class="card-subtitle">@Language.eLearning.CourseDiscussion.GroupDesc</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </th>
+                </tr>
+                <tr>
+                    <th width="15px">#</th>
+                    <th>@Language.eLearning.CourseDiscussion.TitleList</th>
+                    <th width="260px">@Language.eLearning.CourseDiscussion.DateTimeUpdate</th>
+                    @*<th>Post</th>
+                        <th>Posted By</th>
+
+                        <th>Action</th>*@
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+</div>
+
+@section ContentScript{
+    <script type="text/javascript">
+
+
+
+    $(document).ready(function () {
+
+
+
+    });
+
+        $(document).ready(function(){
+            $("#ShowAll").click(function () {
+                $('#DiscussionDropDown button').removeClass('active');
+
+                $("#GroupDataTable_wrapper").show();
+                $("#GeneralDataTable_wrapper").show();
+                $("#ShowAll").addClass('active');
+                $("#DropDownSelected").html("All Topics");
+            });
+            $("#ShowGroup").click(function () {
+                $('#DiscussionDropDown button').removeClass('active');
+
+                $("#GroupDataTable_wrapper").show();
+                $("#GeneralDataTable_wrapper").hide();
+                $("#ShowGroup").addClass('active');
+
+
+                $("#DropDownSelected").html("Show Groups Only");
+            });
+            $("#ShowGeneral").click(function () {
+                $('#DiscussionDropDown button').removeClass('active');
+                $("#GroupDataTable_wrapper").hide();
+                $("#GeneralDataTable_wrapper").show();
+                $("#ShowGeneral").addClass('active');
+
+                $("#DropDownSelected").html("Show General Only");
+            });
+      });
+
+        function clearForm() {
+            $('#addForm').html('');
+
+            $('.editForm').each(function () {
+                $(this).html('');
+                $(this).prev('div.details').removeClass('d-none').addClass('d-block');
+            });
+
+        }
+
+        function showAdd() {
+
+            clearForm();
+
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("_Create", "CourseDiscussion", new { area = "eLearning" })',
+                success: function (data) {
+
+                    $('#addForm').html(data);
+                    $.validator.unobtrusive.parse('#formAdd');
+
+                },
+                error: function (xhr, status, error) {
+                    $('#detail').html('');
+                }
+            });
+
+        }
+
+        function showDetail(obj) {
+
+            var parent = $(obj).closest('div.editForm');
+            parent.html('');
+            parent.prev('div.details').removeClass('d-none').addClass('d-block');
+        }
+
+        function showEdit(obj, id, no, name) {
+
+            clearForm();
+
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("_Edit", "CourseDiscussion", new { area = "eLearning" })?id=' + id + '&Name=' + name + '&No=' + no,
+                success: function (data) {
+
+                    var parent = $(obj).closest('div.details');
+
+                    parent.removeClass('d-block').addClass('d-none');
+                    parent.next('div.editForm').html(data);
+
+                    $.validator.unobtrusive.parse('#formEdit');
+
+                },
+                error: function (xhr, status, error) {
+                    $('#detail').html('');
+                }
+            });
+
+        }
+
+        function showDelete(obj, id, no, name) {
+
+            clearForm();
+
+            $.ajax({
+                type: 'get',
+                url: '@Url.Action("_Delete", "CourseDiscussion", new { area = "eLearning" })?id=' + id + '&Name=' + name + '&No=' + no,
+                success: function (data) {
+
+                    var parent = $(obj).closest('div.details');
+
+                    parent.removeClass('d-block').addClass('d-none');
+                    parent.next('div.editForm').html(data);
+
+                },
+                error: function (xhr, status, error) {
+                    $('#detail').html('');
+                }
+            });
+
+        }
+
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var table = $('#GeneralDataTable').DataTable({
+                serverSide: true,
+                processing: true,
+                ajax: {
+                    "type": "post",
+                    "url": '@(WebApiURL)eLearning/CourseDiscussion/GetAll',
+                    "data": function (filter) {
+                        console.log("-", filter);
+
+                        filter.Code = $('#Filters_Code').val();
+                        filter.Title = $('#Filters_Title').val();
+                        filter.Status = $('#Filters_Status').val();
+                        filter.Price = $('#Filters_Price').val();
+                    },
+                    dataFilter: function (res) {
+                        // do what you need to the data before it loads to the table
+                        // for debugging only for now
+                        return res;
+                    },
+                    error: function (x, y) {
+                        console.log("Error -", x);
+                    }
+                },
+                columns: [
+                    {
+                        sortable: false,
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                   {
+                        data: 'DiscussionCard',
+                        sortable: true,
+                       render: function (data, type, row, meta) {
+                           var first_post = data.FirstPost;
+                           if (data.FirstPost.length > 50) {
+                               first_post = data.FirstPost.substring(0, 50) + '. . .';
+                           }
+                            var result = "";
+                            result += '<div class="media align-items-center">';
+                            result += '<div class="media-left">';
+                            result += ' <div class="forum-icon-wrapper">';
+                            result += '<a href="@Url.Action("View", "CourseDiscussion", new { area = "eLearning" })/' + row.Id + '" class="forum-thread-icon">';
+                            result += ' <i class="material-icons">description</i>';
+                            result += '</a>';
+                            result += '<a href="@Url.Action("View", "CourseDiscussion", new { area = "eLearning" })/' + row.Id + '" class="forum-thread-user">';
+                            result += '<img src="assets/images/people/50/guy-1.jpg" alt="" width="20" class="rounded-circle">';
+                            result += '</a>';
+                            result += '</div>';
+                            result += '</div>';
+                            result += '<div class="media-body">';
+                            result += '<div class="d-flex align-items-center">';
+                            result += '<a href="@Url.Action("View", "CourseDiscussion", new { area = "eLearning" })/' + row.Id + '" class="text-body"><strong> '+ data.CreatedBy+' </strong></a>';
+                            result += '</div>';
+                            result += '<div class="d-flex align-items-center">';
+                            result += '<a class="text-black-70" href="@Url.Action("View", "CourseDiscussion", new { area = "eLearning" })/' + row.Id + ' "class="text-body"><strong> ' + data.Name +' </strong></a>';
+                            result += '</div>';
+                            result += '<a class="text-black-70" href="@Url.Action("View", "CourseDiscussion", new { area = "eLearning" })/' + row.Id + '">';
+                            result += first_post;
+                            result += ' </a>';
+                            result += '</div>';
+                            result += '</div>';
+
+                            return result;
+                        }
+                    },
+                    {
+                        data: 'DisplayDateTime',
+                        sortable: true,
+                        render: function (data) {
+                            var start = new Date();
+                            var datetimetodisplay = "";
+                            if (data.UpdatedOn != data.CreatedOn) {
+                                datetimetodisplay = new Date(data.UpdatedOn);
+                                var difference = moment(start, "DD/MM/YYYY HH:mm:ss").diff(moment(datetimetodisplay, "DD/MM/YYYY HH:mm:ss"));
+                                var gg = moment.duration(difference);
+                                if (gg._milliseconds < oneday) {
+                                    return 'Last reply ' + moment(datetimetodisplay).fromNow();
+                                }
+                                else {
+                                    return 'Last reply on ' + moment(datetimetodisplay).format('LLL');
+                                }
+                            }
+                            else {
+                                datetimetodisplay = new Date(data.CreatedOn);
+                                var difference = moment(start, "DD/MM/YYYY HH:mm:ss").diff(moment(datetimetodisplay, "DD/MM/YYYY HH:mm:ss"));
+                                var gg = moment.duration(difference);
+                                if (gg._milliseconds < oneday) {
+                                    return 'Created ' + moment(datetimetodisplay).fromNow();
+                                }
+                                else {
+                                    return 'Created on ' + moment(datetimetodisplay).format('LLL');
+                                }
+
+                            }
+                        }
+                    }
+                ],
+                paging: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                orderMulti: false,
+                info: true,
+                autoWidth: false,
+                order: [[1, 'asc']],
+                language: {
+                    processing: "Processing... <i class='fa fa-refresh fa-spin'></i>",
+                    emptyTable: "No Record Found",
+                    info: "Showing _START_ - _END_ of _TOTAL_ general discussions"
+                },
+                dom: 'rtip'
+            });
+
+            $('#lengthChange').val(table.page.len());
+
+            $('#quickSearch').keyup(function () {
+                table.search($(this).val()).draw();
+            });
+
+            $('#quickSearchBtn').click(function () {
+                table.search($(this).val()).draw();
+            });
+
+            $('#lengthChange').change(function () {
+                table.page.len($(this).val()).draw();
+            });
+
+            $('#btnSearch').click(function () {
+                table.ajax.reload();
+            });
+
+            table.on('order.dt search.dt', function () {
+                var info = table.page.info();
+                $('#pageInfo').html('Showing ' + (info.start + 1) + ' - ' + info.end + ' of ' + info.recordsTotal + ' courses');
+                $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+            }).draw();
+
+        });
+
+        const oneday = 60 * 60 * 24 * 1000;
+
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var table = $('#GroupDataTable').DataTable({
+                serverSide: true,
+                processing: true,
+                ajax: {
+                    "type": "post",
+                      @{
+                        var sendId = CurrentUser.UserId;
+                    }
+                    "url": '@(WebApiURL)eLearning/CourseDiscussion/GetAllGroup?id=@sendId',
+                    "data": function (filter) {
+                        console.log("-", filter);
+
+                        filter.Code = $('#Filters_Code').val();
+                        filter.Title = $('#Filters_Title').val();
+                        filter.Status = $('#Filters_Status').val();
+                        filter.Price = $('#Filters_Price').val();
+                    },
+                    dataFilter: function (res) {
+                        // do what you need to the data before it loads to the table
+                        // for debugging only for now
+                        return res;
+                    },
+                    error: function (x, y) {
+                        console.log("Error -", x);
+                    }
+                },
+                columns: [
+                    {
+                        sortable: false,
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    {
+                        data: 'DiscussionCard',
+                        sortable: true,
+                        render: function (data, type, row, meta) {
+                            var first_post = data.FirstPost;
+                            if (data.FirstPost.length > 50) {
+                                first_post = data.FirstPost.substring(0, 50) + '. . .';
+                            }
+
+                            var result = "";
+                            result += '<div class="media align-items-center">';
+                            result += '<div class="media-left">';
+                            result += ' <div class="forum-icon-wrapper">';
+                            result += '<a href="@Url.Action("View", "CourseDiscussion", new { area = "eLearning" })/' + row.Id + '" class="forum-thread-icon">';
+                            result += ' <i class="material-icons">description</i>';
+                            result += '</a>';
+                            result += '<a href="@Url.Action("View", "CourseDiscussion", new { area = "eLearning" })/' + row.Id + '" class="forum-thread-user">';
+                            result += '<img src="assets/images/people/50/guy-1.jpg" alt="" width="20" class="rounded-circle">';
+                            result += '</a>';
+                            result += '</div>';
+                            result += '</div>';
+                            result += '<div class="media-body">';
+                            result += '<div class="d-flex align-items-center">';
+                            result += '<a href="@Url.Action("View", "CourseDiscussion", new { area = "eLearning" })/' + row.Id + '" class="text-body"><strong> '+ data.CreatedBy+' </strong></a>';
+                            result += '</div>';
+                            result += '<div class="d-flex align-items-center">';
+                            result += '<a class="text-black-70" href="@Url.Action("View", "CourseDiscussion", new { area = "eLearning" })/' + row.Id + ' "class="text-body"><strong> ' + data.Name +' </strong></a>';
+                            result += '</div>';
+                            result += '<a class="text-black-70" href="@Url.Action("View", "CourseDiscussion", new { area = "eLearning" })/' + row.Id + '">';
+                            result += first_post;
+                            result += ' </a>';
+                            result += '</div>';
+                            result += '</div>';
+
+                            return result;
+                        }
+                    },
+                    {
+                        data: 'DisplayDateTime',
+                        sortable: true,
+                        render: function (data) {
+                            var start = new Date();
+                            var datetimetodisplay = "";
+                            if (data.UpdatedOn != data.CreatedOn) {
+                                datetimetodisplay = new Date(data.UpdatedOn);
+                                var difference = moment(start, "DD/MM/YYYY HH:mm:ss").diff(moment(datetimetodisplay, "DD/MM/YYYY HH:mm:ss"));
+                                var gg = moment.duration(difference);
+                                if (gg._milliseconds < oneday) {
+                                    return 'Last reply ' + moment(datetimetodisplay).fromNow();
+                                }
+                                else {
+                                    return 'Last reply on ' + moment(datetimetodisplay).format('LLL');
+                                }
+                            }
+                            else {
+                                datetimetodisplay = new Date(data.CreatedOn);
+                                var difference = moment(start, "DD/MM/YYYY HH:mm:ss").diff(moment(datetimetodisplay, "DD/MM/YYYY HH:mm:ss"));
+                                var gg = moment.duration(difference);
+                                if (gg._milliseconds < oneday) {
+                                    return 'Created ' + moment(datetimetodisplay).fromNow();
+                                }
+                                else {
+                                    return 'Created on ' + moment(datetimetodisplay).format('LLL');
+                                }
+
+                            }
+                        }
+                    }
+                ],
+                paging: true,
+                lengthChange: true,
+                searching: true,
+                ordering: true,
+                orderMulti: false,
+                info: true,
+                autoWidth: false,
+                order: [[1, 'asc']],
+                language: {
+                    processing: "Processing... <i class='fa fa-refresh fa-spin'></i>",
+                    emptyTable: "No Record Found",
+                    info: "Showing _START_ - _END_ of _TOTAL_ group discussions"
+                },
+                dom: 'rtip'
+            });
+
+            $('#lengthChange').val(table.page.len());
+
+            $('#quickSearch').keyup(function () {
+                table.search($(this).val()).draw();
+            });
+
+            $('#quickSearchBtn').click(function () {
+                table.search($(this).val()).draw();
+            });
+
+            $('#lengthChange').change(function () {
+                table.page.len($(this).val()).draw();
+            });
+
+            $('#btnSearch').click(function () {
+                table.ajax.reload();
+            });
+
+            table.on('order.dt search.dt', function () {
+                var info = table.page.info();
+                $('#pageInfo').html('Showing ' + (info.start + 1) + ' - ' + info.end + ' of ' + info.recordsTotal + ' courses');
+                $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+            }).draw();
+
+        });
+
+    </script>
+
+}
+

@@ -1,0 +1,200 @@
+﻿@model FEP.WebApiModel.RnP.ReturnSurveyResponseModel
+
+@{
+    ViewBag.Title = "Survey";
+    Layout = "~/Views/Shared/_LayoutPublicSurvey.cshtml";
+}
+
+@section Nav{
+    <div id="breadcrumb">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="~/Home">Home</a></li>
+                <li class="breadcrumb-item"><a href="~/RnP/Home/BrowseSurveys">Research & Publication</a></li>
+                <li class="breadcrumb-item"><a href="#">Public Survey</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><a href="#"></a></li>
+            </ol>
+        </nav>
+    </div>
+    <h1 class="page-title text-white">Survey Title: @Model.Survey.Title</h1>
+    <div class="header-text">Ref No: @Model.Survey.RefNo</div>
+    <div class="header-text">Description: @Model.Survey.Description</div>
+}
+
+<section id="search-result" class="publications">
+    <div class="container">
+        <div class="row">
+            <div class="row">
+                <!--
+                <div class="col-xl-3 col-md-3 col-sm-4 my-2">
+                </div>
+                -->
+                <div class="col-xl-12 col-md-12 col-sm-8 mt-2 pb-5">
+                    <!-- Start Form -->
+                    <div class="border-form rounded-top">
+                        <div class="form-container tab-content">
+                            <div id="surveyContainer"></div>
+                        </div>
+                        <div id="surveyResult"></div>
+                        <!-- End Form -->
+                        <textarea id="Questions" name="Questions" class="form-control" rows="3" style="display:none;">@Model.Survey.Contents</textarea>
+                        @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "formresponse", id = "formresponse" }))
+                        {
+                            @Html.AntiForgeryToken()
+
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <input type="hidden" name="ID" class="form-control" value="@Model.Response.ID" />
+                            <input type="hidden" name="SurveyID" class="form-control" value="@Model.Survey.ID" />
+                            <input type="hidden" name="Type" class="form-control" value="@Model.Response.Type" />
+                            if (CurrentUser.IsAuthenticated())
+                            {
+                                <input type="hidden" name="UserId" class="form-control" value="@CurrentUser.UserId" />
+                                <input type="hidden" name="Email" class="form-control" value="@CurrentUser.Email" />
+                            }
+                            else
+                            {
+                                <input type="hidden" name="UserId" class="form-control" value="0" />
+                                <input type="hidden" name="Email" class="form-control" value="@Model.Response.Email" />
+                            }
+                            <input type="hidden" name="ResponseDate" class="form-control" value="" />
+                            <textarea id="Contents" name="Contents" class="form-control" rows="3" style="display:none;"></textarea>
+                            <textarea id="Answers" name="Answers" class="form-control" rows="3" style="display:none;"></textarea>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@section ContentScript {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var surveyJSON = $('#Questions').val();
+
+            var survey = new Survey.Model(surveyJSON);
+
+            var surveyId = '@Model.Survey.ID';
+            var questionPrefix = '.';
+
+            function addQuestionIntoResultsCore(results, namePrefix, name, value, qType) {
+                var prefix = !!namePrefix ? namePrefix + questionPrefix : '';
+                results.push({
+                    surveyId: surveyId,
+                    question: prefix + name,
+                    answer: value,
+                    questionType: qType,
+                });
+            }
+
+            function addQuestionIntoResults(q, results, namePrefix) {
+                addQuestionIntoResultsCore(results, namePrefix, q.name, q.value, q.getType());
+            }
+
+            function addQuestionListIntoResults(questions, results, namePrefix) {
+                for (var i = 0; i < questions.length; i++) {
+                    var q = questions[i];
+                    if (q.getType() == "multipletext") {
+                        for (var index = 0; index < q.items.length; index++) {
+                            addQuestionIntoResults(q.items[index].editor, results, q.name);
+                        }
+                    }
+                    else if (q.getType() == 'matrix') {
+                        for (var rowIndex = 0; rowIndex < q.visibleRows.length; rowIndex++) {
+                            var row = q.visibleRows[rowIndex];
+                            if (!row.value) continue;
+                            addQuestionIntoResultsCore(
+                                results,
+                                namePrefix,
+                                q.name +
+                                questionPrefix +
+                                'row_' + row.text,
+                                row.value,
+                                q.getType()
+                            );
+                        }
+                    }
+                    else if (q.getType() == 'matrixdynamic') {
+                        for (var rowIndex = 0; rowIndex < q.visibleRows.length; rowIndex++) {
+                            for (var colIndex = 0; colIndex < q.columns.length; colIndex++) {
+                                addQuestionIntoResults(
+                                    q.visibleRows[rowIndex].cells[colIndex].question,
+                                    results,
+                                    namePrefix +
+                                    q.name +
+                                    questionPrefix +
+                                    'row_' +
+                                    (rowIndex + 1).toString() +
+                                    questionPrefix +
+                                    'col_' +
+                                    (colIndex + 1).toString()
+                                    //q.columns[colIndex].name
+                                );
+                            }
+                        }
+                    } else if (q.getType() == 'paneldynamic') {
+                        for (var panelIndex = 0; panelIndex < q.panels.length; panelIndex++) {
+                            addQuestionListIntoResults(
+                                q.panels[panelIndex].questions,
+                                results,
+                                namePrefix +
+                                q.name +
+                                questionPrefix +
+                                'panel_' +
+                                (panelIndex + 1).toString()
+                            );
+                        }
+                    } else {
+                        addQuestionIntoResults(q, results, namePrefix);
+                    }
+                }
+            }
+
+            $("#surveyContainer").Survey({
+                model: survey,
+                onComplete: sendDataToServer
+            });
+
+            function sendDataToServer(survey) {
+                var data = survey.data;
+                var surveyResults = [];
+                addQuestionListIntoResults(survey.getAllQuestions(), surveyResults, '');
+                var resultAsString = JSON.stringify(survey.data);
+                $('#Contents').val(resultAsString)
+                var resultAsLines = JSON.stringify(surveyResults);
+                $('#Answers').val(resultAsLines)
+
+                //var data = survey.data;
+                //var surveyResults = [];
+                //addQuestionListIntoResults(survey.getAllQuestions(), surveyResults, '');
+                //document.querySelector('#surveyResult').innerHTML = 'result: ' + JSON.stringify(surveyResults);
+                //return false;
+
+                //alert(resultAsString);
+                //return false;
+                // ajax
+                var form = $('#formresponse');
+                //var u1 = "@(BaseURL)/RnP/Home/SubmitSurvey";
+                //var u2 = form.serialize();
+                //alert(u1);
+                //alert(u2);
+                $.ajax({
+                    url: "@(BaseURL)/RnP/Home/SubmitSurvey",
+                    type: "POST",
+                    data: form.serialize(),
+                    success: function (data) {
+                        //alert('Survey submitted! - ' + resultAsString)
+                        //alert(data.isSuccess);
+                        //callback(saveNo, data.isSuccess);
+                    },
+                    error: function (xhr, status, error) {
+                        //alert(xhr.responseText);
+                    }
+                });
+            }
+
+        });
+    </script>
+}

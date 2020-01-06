@@ -1,0 +1,72 @@
+﻿@model DetailsKMCModel
+
+<div class="modal fade">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <div class="modal-header">       
+                <h4 class="modal-title">@Model.Title</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                
+                @if (Model.IsEditor)
+                {
+                    @Html.Raw(Model.EditorCode)
+                }
+                else
+                {
+
+                    switch (Model.Type)
+                    {
+
+                        case KMCType.Image:
+
+                            <img class="content" src="@Url.Action("GetContent", "Manage", new { area = "KMC", @id = Model.FileId })" />
+
+                            break;
+
+                        case KMCType.Video:
+
+                            <video class="content" controls>
+                                <source src="@Url.Action("GetContent", "Manage", new { area = "KMC", @id = Model.FileId })" type="@Model.FileType">
+                                Your browser does not support html 5.
+                            </video>
+
+                            break;
+
+                        case KMCType.Audio:
+
+                            <audio controls>
+                                <source src="@Url.Action("GetContent", "Manage", new { area = "KMC", @id = Model.FileId })" type="@Model.FileType">
+                                Your browser does not support html 5.
+                            </audio>
+
+                            break;
+
+                        default:
+
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    @Html.FEPLabelFor(model => model.File)
+                                    <div class="input-group">
+                                        <span class="form-control">@Html.Raw(@Model.FileName)</span>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text" style="cursor:pointer" onclick="window.location='@Url.Action("GetContent", "Manage", new { area = "KMC", @id = Model.FileId })'" data-toggle="tooltip" title="Download File"><i class="la la-download"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            break;
+
+                    }
+
+                }
+
+            </div>           
+            
+        </div>
+    </div>
+</div>

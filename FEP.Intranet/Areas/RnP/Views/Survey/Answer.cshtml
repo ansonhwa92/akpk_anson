@@ -1,0 +1,175 @@
+﻿@model FEP.WebApiModel.RnP.ReturnSurveyResponseModel
+
+@{
+    ViewBag.Title = "Survey";
+    Layout = "~/Views/Shared/_LayoutSurveyTester.cshtml";   // not tester
+}
+
+@section Nav{
+    <div class="title_header">
+        <div class="title-header-container">
+            <div class="container">
+                <!-- if have button -->
+                <div class="header-col-right float-right mt-5"><a href="~/Home" class="btn btn-outline-primary text-white"><span class="align-middle"><i class="la la-long-arrow-left">&nbsp;</i></span> Home</a></div>
+                <div class="header-col-left">
+                    <div id="breadcrumb">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="~/Home">Home</a></li>
+                                <li class="breadcrumb-item"><a href="~/RnP/Home">Research & Publication</a></li>
+                                <li class="breadcrumb-item"><a href="#">Survey</a></li>
+                                <li class="breadcrumb-item active" aria-current="page"><a href="#"></a></li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <h1 class="page-title text-white">Survey</h1>
+                    <div class="header-text">Take the survey.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row">
+    <!--
+    <div class="col-xl-3 col-md-3 col-sm-4 my-2">
+    </div>
+    -->
+    <div class="col-xl-12 col-md-12 col-sm-8 mt-2 pb-5">
+        <!-- Start Form -->
+        <div class="border-form rounded-top">
+            <div class="form-container tab-content">
+                <div id="surveyContainer"></div>
+            </div>
+            <!-- End Form -->
+            <textarea id="Questions" name="Questions" class="form-control" rows="3" style="display:none;">@Model.Survey.Contents</textarea>
+            @using (Html.BeginForm(null, null, FormMethod.Post, new { name = "formresponse", id = "formresponse" }))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <input type="hidden" name="ID" class="form-control" value="@Model.Response.ID" />
+                <input type="hidden" name="SurveyID" class="form-control" value="@Model.Survey.ID" />
+                <input type="hidden" name="Type" class="form-control" value="@Model.Response.Type" />
+                <input type="hidden" name="UserId" class="form-control" value="@Model.Response.UserId" />
+                <input type="hidden" name="Email" class="form-control" value="@Model.Response.Email" />
+                <input type="hidden" name="ResponseDate" class="form-control" value="" />
+                <textarea id="Contents" name="Contents" class="form-control" rows="3" style="display:none;"></textarea>
+                <textarea id="Answers" name="Answers" class="form-control" rows="3" style="display:none;"></textarea>
+            }
+        </div>
+    </div>
+</div>
+}
+
+@section ContentScript {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var surveyJSON = $('#Questions').val();
+
+            var survey = new Survey.Model(surveyJSON);
+
+            var surveyId = '@Model.Survey.ID';
+            var questionPrefix = '.';
+
+            function addQuestionIntoResultsCore(results, namePrefix, name, value, qType) {
+                var prefix = !!namePrefix ? namePrefix + questionPrefix : '';
+                results.push({
+                    surveyId: surveyId,
+                    question: prefix + name,
+                    answer: value,
+                    questionType: qType,
+                });
+            }
+
+            function addQuestionIntoResults(q, results, namePrefix) {
+                addQuestionIntoResultsCore(results, namePrefix, q.name, q.value, q.getType());
+            }
+
+            function addQuestionListIntoResults(questions, results, namePrefix) {
+                for (var i = 0; i < questions.length; i++) {
+                    var q = questions[i];
+                    if (q.getType() == "multipletext") {
+                        for (var index = 0; index < q.items.length; index++) {
+                            addQuestionIntoResults(q.items[index].editor, results, q.name);
+                        }
+                    }
+                    else if (q.getType() == 'matrix') {
+                        for (var rowIndex = 0; rowIndex < q.visibleRows.length; rowIndex++) {
+                            var row = q.visibleRows[rowIndex];
+                            if (!row.value) continue;
+                            addQuestionIntoResultsCore(
+                                results,
+                                namePrefix,
+                                q.name + 'row_' + row.text,
+                                row.value,
+                                q.getType()
+                            );
+                        }
+                    }
+                    else if (q.getType() == 'matrixdynamic') {
+                        for (var rowIndex = 0; rowIndex < q.visibleRows.length; rowIndex++) {
+                            for (var colIndex = 0; colIndex < q.columns.length; colIndex++) {
+                                addQuestionIntoResults(
+                                    q.visibleRows[rowIndex].cells[colIndex].question,
+                                    results,
+                                    namePrefix +
+                                    q.name +
+                                    'row_' +
+                                    (rowIndex + 1).toString() +
+                                    questionPrefix +
+                                    q.columns[colIndex].name
+                                );
+                            }
+                        }
+                    } else if (q.getType() == 'paneldynamic') {
+                        for (var panelIndex = 0; panelIndex < q.panels.length; panelIndex++) {
+                            addQuestionListIntoResults(
+                                q.panels[panelIndex].questions,
+                                results,
+                                namePrefix +
+                                q.name +
+                                questionPrefix +
+                                'panel_' +
+                                (panelIndex + 1).toString()
+                            );
+                        }
+                    } else {
+                        addQuestionIntoResults(q, results, namePrefix);
+                    }
+                }
+            }
+
+            $("#surveyContainer").Survey({
+                model: survey,
+                onComplete: sendDataToServer
+            });
+
+            function sendDataToServer(survey) {
+                var data = survey.data;
+                var surveyResults = [];
+                addQuestionListIntoResults(survey.getAllQuestions(), surveyResults, '');
+                var resultAsString = JSON.stringify(survey.data);
+                $('#Contents').val(resultAsString)
+                var resultAsLines = JSON.stringify(surveyResults);
+                $('#Answers').val(resultAsLines)
+                alert(resultAsString);
+                return false;
+                // ajax
+                var form = $('#formresponse');
+                $.ajax({
+                    @*url: "@(WebApiURL)RnP/Survey/SubmitAnswers",*@
+                    url: "@Url.Action("SubmitAnswers", "Survey", new { area = "RnP" })",
+                    type: "POST",
+                    data: form.serialize(),
+                    success: function (data) {
+                        //alert(data.isSuccess);
+                        //callback(saveNo, data.isSuccess);
+                    }
+                });
+            }
+
+        });
+    </script>
+}

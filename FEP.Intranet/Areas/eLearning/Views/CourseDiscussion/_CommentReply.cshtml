@@ -1,0 +1,34 @@
+﻿@model DiscussionView
+@{ int pId = ViewBag.PostId;
+}
+
+<style>
+    textarea.textarea-reply {
+        max-width: 99%;
+        min-width: 99%;
+        margin: 10px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+@using (Html.BeginForm("CreateNewComment", "CourseDiscussion", null, FormMethod.Post, new { id = "formAdd", enctype = "multipart/form-data" }))
+{
+    <div class=""  style="min-height:125px;">
+        @Html.AntiForgeryToken()
+        @*<textarea name="reply_text" id="ReplyTextArea" placeholder="Reply" rows="6" style="max-width:99%; min-width: 99%; margin: 10px;  display: block; margin-left : auto; margin-right: auto;" tabindex=""></textarea>*@
+        @Html.TextAreaFor(m => m.NewDiscussionReply.Message, new { @class = "form-control textarea-reply" })
+        @Html.ValidationMessageFor(m => m.NewDiscussionReply.Message)
+        @Html.HiddenFor(m => m.NewDiscussionReply.ParentId)
+        <button type="submit" class="btn btn-secondary btn-sm mw-auto pull-right" style="margin: 10px">@Language.eLearning.CourseDiscussion.Comment</button>
+    </div>
+}
+
+<script>
+    $(document).ready(function () {
+        //var d = $("#NewDiscussionReply_ParentId ").val();
+        //$("#NewDiscussionReply_ParentId").val(d);
+        $("#NewDiscussionReply_ParentId").val(@pId);
+    });
+</script>

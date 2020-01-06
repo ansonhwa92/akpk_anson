@@ -1,0 +1,32 @@
+﻿@{
+    if (CurrentUser.HasAccess(FEP.Model.UserAccess.NewsArticleManage) || CurrentUser.HasAccess(FEP.Model.UserAccess.NewsArticleAdd) || CurrentUser.HasAccess(FEP.Model.UserAccess.NewsArticleEdit))
+    {
+        <div class="row">
+            @if (CurrentUser.HasAccess(FEP.Model.UserAccess.NewsArticleManage) || CurrentUser.HasAccess(FEP.Model.UserAccess.NewsArticleAdd))
+            {
+                <div class="col-lg-6">
+                    <div class="menu-list">
+                        <h6 class="color-darkblue">Menu</h6>
+                        @if (CurrentUser.HasAccess(FEP.Model.UserAccess.NewsArticleManage))
+                        {
+                            <a class="dropdown-item" href="@Url.Action("Index", "NewsArticle", new { area = "NewsArticleManagement" })">@Language.NewsArticle.BreadcrumbManagement</a>
+                        }
+                        @if (CurrentUser.HasAccess(FEP.Model.UserAccess.NewsArticleAdd))
+                        {
+                            <a class="dropdown-item" href="@Url.Action("Create", "NewsArticle", new { area = "NewsArticleManagement" })">@Language.NewsArticle.CreateTitle</a>
+                        }
+                    </div>
+                </div>
+            }
+            @if (CurrentUser.HasAccess(FEP.Model.UserAccess.NewsArticleEdit))
+            {
+                <div class="col-lg-6">
+                    <div class="menu-list">
+                        <h6 class="color-darkblue">@Language.NewsArticle.Setting</h6>
+                        <a class="dropdown-item" href="@Url.Action("SequenceList", "NewsArticle", new { area = "NewsArticleManagement" })">@Language.NewsArticle.ManageSequence</a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}

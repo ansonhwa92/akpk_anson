@@ -1,0 +1,301 @@
+﻿@model FEP.WebApiModel.RnP.CreateSurveyModel
+
+@{
+    ViewBag.Title = "Create Survey";
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+@section Nav{
+    <div class="title_header">
+        <div class="title-header-container">
+            <div class="container">
+                <!-- if have button -->
+                <div class="header-col-right float-right mt-5"><a href="~/RnP/Survey" class="btn btn-outline-primary text-white"><span class="align-middle"><i class="la la-long-arrow-left">&nbsp;</i></span> Back</a></div>
+                <div class="header-col-left">
+                    <div id="breadcrumb">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="~/Home">Home</a></li>
+                                <li class="breadcrumb-item"><a href="~/RnP/Home">Research & Publication</a></li>
+                                <li class="breadcrumb-item"><a href="~/RnP/Survey">Survey</a></li>
+                                <li class="breadcrumb-item"><a href="#">Create Survey</a></li>
+                                <li class="breadcrumb-item active" aria-current="page"><a href="#"></a></li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <h1 class="page-title text-white">Create Survey</h1>
+                    <div class="header-text">Create new survey.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data", id = "target" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="row">
+        <div class="col-xl-3 col-md-3 col-sm-4 my-2">
+            <div class="sidebar-left">
+                <!-- Steps -->
+                <div class="sidebar-inner sticky">
+                    <ul class="steps steps-vertical">
+                        <li class="step-item complete">
+                            <a href="" class="step-link">
+                                <span class="step-number">1</span>
+                                <span class="step-title">Select Survey Type</span>
+                            </a>
+                        </li>
+                        <li class="step-item active">
+                            <a href="" class="step-link">
+                                <span class="step-number">2</span>
+                                <span class="step-title">Fill In Survey Details</span>
+                            </a>
+                        </li>
+                        <li class="step-item disabled">
+                            <a href="" class="step-link">
+                                <span class="step-number">3</span>
+                                <span class="step-title">Design Survey Questions</span>
+                            </a>
+                        </li>
+                        <li class="step-item disabled">
+                            <a href="" class="step-link">
+                                <span class="step-number">4</span>
+                                <span class="step-title">Review & Submission</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- End Steps -->
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-9 col-md-9 col-sm-8 mt-2 pb-5">
+            <!-- Start Form -->
+            <div class="border-form rounded-top">
+                <div class="form-container">
+                    <div class="mt-2 mb-4 pb-1">
+                        <h4 class="color-darkblue mb-0">Survey Details</h4>
+                        <h6 class="font-weight-normal">Information marked with (<span class="text-danger">*</span>) is mandatory.</h6>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-12">
+                            @Html.LabelFor(model => model.Type, htmlAttributes: new { @class = "control-label" }) <span class="text-danger">*</span>
+                            @Html.HiddenFor(model => model.Type, new { htmlAttributes = new { @class = "form-control" } })
+                            @*Html.EnumDropDownListFor(model => model.Type, new { @class = "form-control", @Value = @ViewBag.TypeId, @readonly = "readonly" })*@
+                            <input class="form-control" type="text" name="TypeName" id="TypeName" readonly="readonly" value="@ViewBag.TypeName">
+                            @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-12">
+                            @Html.LabelFor(model => model.Category, htmlAttributes: new { @class = "control-label" }) <span class="text-danger">*</span>
+                            @Html.EnumDropDownListFor(model => model.Category, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-12">
+                            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label" }) <span class="text-danger">*</span>
+                            @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control", @placeholder = "Title of the Survey" } })
+                            @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-12">
+                            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label" }) <span class="text-danger">*</span>
+                            @*Html.TextAreaFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" }, @placeholder = "Description of Publication", cols = 48, @rows = 2 })*@
+                            <textarea id="Description" name="Description" class="form-control" rows="3" placeholder="Description of Survey"></textarea>
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    @if (ViewBag.TypeName == "Public Mass")
+                    {
+                        <div class="row" style="display:none;">
+                            <div class="form-group col-lg-12">
+                                @Html.HiddenFor(model => model.TargetGroup, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                        </div>
+                    }
+                    else if (ViewBag.TypeName == "Targeted Groups")
+                    {
+                        <div class="row">
+                            <div class="form-group col-lg-12">
+                                @Html.LabelFor(model => model.TargetGroup, htmlAttributes: new { @class = "control-label" }) <span class="text-danger">*</span>
+                                <select class="js-example-basic-multiple" id="survey_group" name="survey_groups[]" multiple="multiple" style="width: 100%;" placeholder="Select group(s)">
+                                    @if (ViewBag.Groups != null)
+                                    {
+                                        foreach (var group in ViewBag.Groups)
+                                        {
+
+                                            <option value="@group.ID">@group.Name</option>
+                                        }
+                                    }
+                                </select>
+                                @Html.HiddenFor(model => model.TargetGroup, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.TargetGroup, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="form-group col-lg-6">
+                            @Html.LabelFor(model => model.StartDate, htmlAttributes: new { @class = "control-label", @title = "The start date of the Survey duration" }) <span class="text-danger">*</span>
+                            <div class="dateSelect">
+                                <input type="text" id="date_start" class="form-control" placeholder="Date Start" data-input="flatpickr">
+                                <a class="input-button calendar" title="toggle" data-toggle>
+                                    <i class="la la-calendar"></i>
+                                </a>
+                                <a class="input-button clear" title="clear" data-clear>
+                                    <i class="la la-times"></i>
+                                </a>
+                            </div>
+                            @Html.HiddenFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="form-group col-lg-6">
+                            @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label", @title = "The end date of the Survey duration" }) <span class="text-danger">*</span>
+                            <div class="dateSelect">
+                                <input type="text" id="date_end" class="form-control" placeholder="Date End" data-input="flatpickr">
+                                <a class="input-button calendar" title="toggle" data-toggle>
+                                    <i class="la la-calendar"></i>
+                                </a>
+                                <a class="input-button clear" title="clear" data-clear>
+                                    <i class="la la-times"></i>
+                                </a>
+                            </div>
+                            @Html.HiddenFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-12">
+                            @Html.LabelFor(model => model.RequireLogin, htmlAttributes: new { @class = "control-label" }) <span class="text-danger">*</span>
+                            <!--<div class="custom-control custom-radio">
+                                <label for="RequireLogin1"><input type="radio" class="custom-control" id="RequireLogin1" name="RequireLogin" value="1" style="float:left;margin-top:-5px;margin-right:8px;" />Yes</label><br />
+                                <label for="RequireLogin0"><input type="radio" class="custom-control" id="RequireLogin0" name="RequireLogin" value="0" style="float:left;margin-top:-5px;margin-right:8px;" />No</label><br />
+                            </div>-->
+                            <div class="custom-control custom-radio">
+                                @Html.RadioButtonFor(model => model.RequireLogin, "true", new { id = "yes" })
+                                @Html.Label("yes", "Yes")
+                                <br />
+                                @Html.RadioButtonFor(model => model.RequireLogin, "false", new { id = "no" })
+                                @Html.Label("no", "No")
+                                @Html.ValidationMessageFor(model => model.RequireLogin, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-12">
+                            @Html.LabelFor(model => model.CoverPictures, htmlAttributes: new { @class = "control-label" })
+                            @Html.Partial("_CoverPicture", Model.CoverPictures)
+                            @Html.ValidationMessageFor(model => model.CoverPictures, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-12">
+                            @Html.LabelFor(model => model.AuthorPictures, htmlAttributes: new { @class = "control-label" })
+                            @Html.Partial("_AuthorPicture", Model.AuthorPictures)
+                            @Html.ValidationMessageFor(model => model.AuthorPictures, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-12">
+                            @Html.LabelFor(model => model.ProofOfApproval, htmlAttributes: new { @class = "control-label" }) <span class="text-danger">*</span>
+                            @Html.Partial("_ProofOfApproval", Model.ProofOfApproval)
+                            @Html.ValidationMessageFor(model => model.ProofOfApproval, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-12">
+                            <label class="d-block">Select Template (optional) <!--span class="text-danger">*</span--></label>
+                            @*<select class="select2" name="TemplateSelection" style="width: 100%;">*@
+                            <select class="form-control" name="TemplateSelection" id="TemplateSelection" style="width: 100%;">
+                                <option value="0">Start from scratch</option>
+                                @if (ViewBag.Templates != null)
+                                {
+                                    foreach (var item in ViewBag.Templates)
+                                    {
+
+                                        <option value="@item.ID">@item.TemplateName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Form -->
+            </div>
+            <div class="border-left border-right border-bottom p-3 rounded-bottom">
+                <!--input type="submit" value="Create" class="btn btn-default" /-->
+                <input class="form-control" type="hidden" name="CreatorId" id="CreatorId" value="@CurrentUser.UserId">
+                <a class="btn btn-default" href="@Url.Action("SelectType", "Survey", new { area = "RnP" })" data-toggle="tooltip" data-placement="top" title="Back">Back</a>
+                <button type="submit" class="btn btn-secondary" id="btnSave" name="Submittype" value="Save">Next</button>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section ContentScript {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            function sortDates(dateType, dateStr) {
+                var date1 = $('#StartDate').val();
+                var date2 = $('#EndDate').val();
+                var revdate1 = date1.substr(6, 4) + date1.substr(3, 2) + date1.substr(0, 2);
+                var revdate2 = date2.substr(6, 4) + date2.substr(3, 2) + date2.substr(0, 2);
+                if (dateType == 1) {
+                    if (revdate2 < revdate1) {
+                        $('#EndDate').val(date1);
+                        $("#date_end").val(date1);
+                    }
+                }
+                else if (dateType == 2) {
+                    if (revdate2 < revdate1) {
+                        $('#StartDate').val(date2);
+                        $("#date_start").val(date2);
+                    }
+                }
+            }
+
+            $("#date_start").flatpickr({
+                dateFormat: "d/m/Y",
+                minDate: "today",
+                maxDate: "31/01/2200",
+                onChange: function (selectedDates, dateStr, instance) {
+                    $("#StartDate").val(dateStr);
+                    sortDates(1, dateStr);
+                },
+            });
+
+            $("#date_end").flatpickr({
+                dateFormat: "d/m/Y",
+                minDate: "today",
+                maxDate: "31/01/2200",
+                onChange: function (selectedDates, dateStr, instance) {
+                    $("#EndDate").val(dateStr);
+                    sortDates(2, dateStr);
+                },
+            });
+
+            $('#survey_group').change(function () {
+                var selectedValues = [];
+                var selectedText = "";
+                $("#survey_group :selected").each(function () {
+                    //selectedValues.push($(this).val());
+                    selectedValues.push($(this).text());
+                });
+                selectedText = selectedValues.join();
+                $("#TargetGroup").val(selectedText);
+            });
+
+            RefreshFile1();
+            RefreshFile2();
+            RefreshFile3();
+        });
+    </script>
+}
+

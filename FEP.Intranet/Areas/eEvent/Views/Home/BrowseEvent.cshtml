@@ -1,0 +1,202 @@
+﻿@model FEP.WebApiModel.LandingPage.BrowseEventModel
+
+@{
+	ViewBag.Title = "Browse Public Event";
+	Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+@section Nav{
+	<div class="title_header">
+		<div class="title-header-container">
+			<div class="container">
+				<!-- if have button -->
+				@*<div class="header-col-right float-right mt-5"><a href='@Url.Action("PublicEventDetails", "Home", new { area = "eEvent", @id = Model.Id})' class="btn btn-outline-primary text-white"><span class="align-middle"><i class="la la-long-arrow-left">&nbsp;</i></span> Back</a></div>*@
+				<div class="header-col-left">
+					<div id="breadcrumb">
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item"><a href="~/Home">Home</a></li>
+								<li class="breadcrumb-item"><a href="~/eEvent/Home">Public Event</a></li>
+								<li class="breadcrumb-item active" aria-current="page"><a href="#"></a></li>
+							</ol>
+						</nav>
+					</div>
+					<h1 class="page-title text-white">Browse Public Event</h1>
+					<div class="header-text">Browse and purchase public event</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+<main id="landing-inner" class="rellax" data-rellax-speed="0">
+	<!-- =====================
+		Landing Content
+	========================-->
+	@*<section id="main-content">*@
+		<!-- =====================
+			Search Dropdown
+		========================-->
+		@*<div id="search-dropdown">
+			<div class="container">
+				<div id="search-dropdown">
+					<div class="container">
+						<div class="search-dropdown-wrapper">
+							<div class="input-group">
+								<div class="input-group-prepend">
+									<select class="select2" name="module">
+										<option value="e-Events">e-Events</option>
+										<option value="e-Learning">e-Learning</option>
+										<option value="Research">Research</option>
+										<option value="Publications">Publications</option>
+									</select>
+								</div>
+								<input type="text" class="form-control" placeholder="Search for online courses, instructor name, etc.." name="search">
+								<div class="input-group-append">
+									<button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="empty_6"></div>
+	</section>*@
+
+	<!-- =====================
+		  Searching Result
+	   ========================-->
+	<section id="search-result" class="eevents">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-3">
+					<div class="search-col-left">
+						<div class="input-keyword mb-5">
+							<input type="text" class="form-control form-control-rounded" placeholder="Type keyword here..." value="@Model.Keyword" name="keyword" id="textKeyword">
+							<div class="input-group-append">
+								<button class="btn btn-circle" type="button" id="buttonSearch"><i class="fas fa-search text-white"></i></button>
+							</div>
+						</div>
+						<!-- Listing Filter -->
+						<div class="listing_filter dropdown dd-side">
+							<div class="dropdown-menu">
+								<div class="listing-filter-inner">
+
+									<div class="filter-type">
+										<h4 class="color-darkblue">Event Type</h4>
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input" id="checkAll" @ViewBag.TypeAll>
+											<label class="custom-control-label" for="checkAll" id="labelAll">All</label>
+											<!--<span class="filter-counter">(100)</span>-->
+										</div>
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input" id="checkWorkshops" @ViewBag.Typeworkshops>
+											<label class="custom-control-label" for="checkWorkshops" id="labelWorkshops">Workshops</label>
+										</div>
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input" id="checkSeminars" @ViewBag.Typeseminars>
+											<label class="custom-control-label" for="checkSeminars" id="labelSeminars">Seminars</label>
+										</div>
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input" id="checkDialogues" @ViewBag.Typedialogues>
+											<label class="custom-control-label" for="checkDialogues" id="labelDialogues">Dialogues</label>
+										</div>
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input" id="checkConferences" @ViewBag.Typeconferences>
+											<label class="custom-control-label" for="checkConferences" id="labelConferences">Conferences</label>
+										</div>
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input" id="checkSymposiums" @ViewBag.Typesymposium>
+											<label class="custom-control-label" for="checkSymposiums" id="labelSymposiums">Symposiums</label>
+										</div>
+										<div class="custom-control custom-checkbox">
+											<input type="checkbox" class="custom-control-input" id="checkConventions" @ViewBag.Typeconvention>
+											<label class="custom-control-label" for="checkConventions" id="labelConventions">Conventions</label>
+										</div>
+									</div>
+
+								</div>
+							</div>
+							<button class="btn btn-secondary btn-rounded" id="buttonReset">Clear Filter</button>
+						</div>
+					</div>
+				</div>
+				<div class="col-lg-9">
+					<div class="search-col-right">
+						<div class="top-filter-wrap">
+							<div class="showing-result">Showing 1 - @Model.LastIndex of @Model.ItemCount public event</div>
+							<div class="sorting-wrap">
+								<div class="sorting-dropdown">
+									<select class="select2 form-control" name="sorting" id="selectSorting">
+										<option value="default" @ViewBag.DefaultSorting>Default Sorting</option>
+										<option value="EventTitle" @ViewBag.TitleSorting>Public Event Title</option>
+										<option value="RefNo" @ViewBag.YearSorting>Reference No</option>
+										<option value="CreatedDate" @ViewBag.AddedSorting>Date Added</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="empty_3"></div>
+						<!-- Filter result -->
+						<div class="some-list">
+							<div class="row">
+								@{
+									var icount = 0;
+									var coverpic1 = "";
+									var coverpic2 = "";
+									var speakerpic = "";
+								}
+								@foreach (var item in Model.PublicEvents)
+								{
+									icount++;
+									if ((item.CoverPicture != "") && (item.CoverPicture != null))
+									{
+										coverpic1 = BaseURL + "/Data/images/publicevent/" + item.CoverPicture;
+										coverpic2 = BaseURL + "/Data/images/publicevent/" + item.CoverPicture;
+									}
+									else
+									{
+										coverpic1 = BaseURL + "/" + "img" + "/cover-buku-1.jpg";
+										coverpic2 = BaseURL + "/" + "img" + "/cover-buku-1.jpg";
+									}
+									if ((item.SpeakerPicture != "") && (item.SpeakerPicture != null))
+									{
+										speakerpic = BaseURL + "/Data/images/publicevent/" + item.SpeakerPicture;
+									}
+									else
+									{
+										speakerpic = BaseURL + "/" + "img" + "/8.jpg";
+									}
+
+									<div class="col-lg-4 col-sm-6">
+										<div class="card__wrapper">
+											<div class="card__top">
+												<div class="card__top__wapper"><img class="card__top__image" src="@coverpic1" alt="image"></div>
+											</div>
+											<div class="card__body">
+												<div>
+													<a class="card__title" href="@Url.Action("PublicEventDetails", "Home", new { area = "eEvent", @id = item.Id })">@item.EventTitle</a>
+												</div>
+												<div class="card__info">
+													<ul>
+														<li class="date"><span class="d-inline-block" data-toggle="tooltip" title="Event Date"><span class="card__icon"><i class="la la-calendar"></i></span></span>@item.StartDate.Value.ToString("dd/MM/yyyy") - @item.EndDate.Value.ToString("dd/MM/yyyy")</li>
+														<li class="place"><span class="d-inline-block" data-toggle="tooltip" title="Venue"><span class="card__icon"><i class="la la-map-marker"></i></span></span>@item.Venue</li>
+														<li class="eventname"><span class="d-inline-block" data-toggle="tooltip" title="Event type"><span class="card__icon"><i class="la la-list-ul"></i></span></span>@item.EventCategoryName</li>
+														<li class="status sellingfast"><span class="d-inline-block" data-toggle="tooltip" title="Seating Availability"><span class="card__icon"><i class="fas fa-chair"></i></span></span>@*@ViewBag.SeatAvailable*@ @item.ParticipantAllowed seats</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+
+
+								}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</main>
